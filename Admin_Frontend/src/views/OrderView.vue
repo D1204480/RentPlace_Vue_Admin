@@ -63,98 +63,76 @@
                 <th scope="col">訂單編號</th>
                 <th scope="col">訂單日期</th>
                 <th scope="col">預約者編號</th>
+                <th scope="col">付款方式</th>
+                <th scope="col">訂單狀態</th>
                 <th scope="col">訂單內容</th>
-                <th scope="col">付款狀態</th>
                 <th scope="col">取消訂單</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="order in filteredOrders" :key="order.orderId">
-                <th scope="row">{{ order.orderId }}</th>
-                <td>{{ formatDate(order.orderDate) }}</td>
-                <td>{{ order.userId }}</td>
-                <td>{{ order.payment?.paymentMethodDisplay || '-' }}</td>
-                <td>{{ order.status?.status || '-' }}</td>
-                <td style="white-space: nowrap;">
-                  <a class="btn btn-warning btn-sm btn-xs btn-block" 
-                     :data-bs-toggle="'collapse'"
-                     :href="'#collapseOrder' + order.orderId" 
-                     role="button" 
-                     aria-expanded="false"
-                     :aria-controls="'collapseOrder' + order.orderId" 
-                     @click="getDataByOrderId(order.orderId)">
-                    訂單詳情
-                  </a>
-                </td>
-                <td id="orderStatus1">-</td>
+              <!-- 將每個訂單資料和其對應的 collapse 內容放在一起 -->
+              <template v-for="order in filteredOrders" :key="order.orderId">
+                <!-- 訂單資料行 -->
+                <tr>
+                  <th scope="row">{{ order.orderId }}</th>
+                  <td>{{ formatDate(order.orderDate) }}</td>
+                  <td>{{ order.userId }}</td>
+                  <td>{{ order.payment?.paymentMethodDisplay || '-' }}</td>
+                  <td>{{ order.status?.status || '-' }}</td>
+                  <td style="white-space: nowrap;">
+                    <a class="btn btn-warning btn-sm btn-xs btn-block" :data-bs-toggle="'collapse'"
+                      :href="'#collapseOrder' + order.orderId" role="button" aria-expanded="false"
+                      :aria-controls="'collapseOrder' + order.orderId" @click="getDataByOrderId(order.orderId)">
+                      訂單詳情
+                    </a>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                      data-bs-target="#deleteMenuModal" v-on:click="onSelectOrder(order)"
+                      :disabled="order.status?.statusId === 7">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#dc3545"
+                        class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                        <path
+                          d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5">
+                        </path>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
 
-                <!-- delete button -->
-                <td>
-                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMenuModal"
-                    v-on:click="onSelectOrder(order)" :disabled="order.status?.statusId === 7"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                      fill="#dc3545" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-                      <path
-                        d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5">
-                      </path>
-                    </svg></button>
-                </td>
-              </tr>
-
-              <!-- test 訂單詳情區 -->
-              <tr class="collapse" :id="'collapseOrder' + order.orderID">
-                <td colspan="8">
-                  <div style="border-radius: 10px; background-color: #fff3cd;">
-                    <div class="container-fluid">
-                      <div class="d-flex justify-content-between p-3">
-                        <h5>訂購人 : <span>{{ order.customerName }}</span></h5>
-                        <button type="button" class="btn btn-success btn-sm">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-telephone-outbound-fill" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd"
-                              d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877zM11 .5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L14.293 1H11.5a.5.5 0 0 1-.5-.5">
-                            </path>
-                          </svg>
-                          聯絡訂購人
-                        </button>
-                      </div>
-
-                      <!-- 訂單詳細品項表格 -->
-                      <table class="table mb-3 table-borderless table-responsive table-warning text-start">
-                        <thead class="td-border-line">
-                          <tr>
-                            <th scope="col">訂購品項</th>
-                            <th scope="col">數量</th>
-                            <th scope="col" class="text-start">訂單備註</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="item in getOrderItems(order.orderID)" :key="item.orderID">
-                            <th scope="row">{{ item.menuItem }}</th>
-                            <td>x{{ item.quantity }}</td>
-                            <td style="word-wrap: break-word; width: 50%;">
-                              {{ item.notes }}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-
-                      <!-- 訂單狀態選單 -->
-                      <div class="d-flex justify-content-end">
-                        <div class="p-3 d-flex align-items-center" style="width: 250px;">
-                          <span style="color: #961b28;white-space: nowrap;">備餐狀態：</span>
-                          <select class="form-select form-select-sm" aria-label=".form-select-sm example"
-                            onchange="updateOrderStatus(this, 'orderStatus1')">
-                            <option value="-" selected>請選擇狀態</option>
-                            <option value="備餐中">備餐中</option>
-                            <option value="備餐完畢">備餐完畢</option>
-                          </select>
+                <!-- Collapse 內容行 -->
+                <tr class="collapse" :id="'collapseOrder' + order.orderId">
+                  <td colspan="7">
+                    <div style="border-radius: 10px; background-color: #fff3cd;">
+                      <div class="container-fluid">
+                        <div class="d-flex justify-content-between p-3">
+                          <h5>預約資訊</h5>
                         </div>
+
+                        <!-- 預約詳細資訊 -->
+                        <table class="table mb-3 table-borderless table-responsive table-warning text-start">
+                          <thead class="td-border-line">
+                            <tr>
+                              <th scope="col">預約日期</th>
+                              <th scope="col">時段</th>
+                              <th scope="col">預約人數</th>
+                              <th scope="col">備註</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>{{ formatDate(order.reservation?.reservationDate) }}</td>
+                              <td>{{ order.reservation?.timePeriod?.period || '-' }}</td>
+                              <td>{{ order.reservation?.numberOfPeople || '-' }}</td>
+                              <td>{{ order.reservation?.note || '-' }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
@@ -188,21 +166,11 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      orders: [], // API 取得的訂單資料
-      orderDetails: {}, // 儲存各訂單的詳細資料
-      filterDate: 'none', // 預設篩選條件
-      searchQuery: '', // 搜尋關鍵字
-      keyword: "",
-      selectedOrder: {
-        orderID: "",  // 訂單 ID
-        orderDate: "",
-        etd: "",
-        customerName: "",
-        quantity: "",
-        menuItem: "",
-        notes: "",
-        orderStatusID: "",  // 訂單狀態 ID
-      },
+      orders: [],
+      orderDetails: {},
+      filterDate: 'none',
+      searchQuery: '',
+      selectedOrder: null
     };
   },
 
@@ -211,22 +179,18 @@ export default {
       const today = new Date();
       const tomorrow = new Date();
       tomorrow.setDate(today.getDate() + 1);
-
       const oneWeekLater = new Date();
       oneWeekLater.setDate(today.getDate() + 7);
 
-      // 如果 filterDate 是 'none'，返回所有訂單
       if (this.filterDate === 'none') {
         return this.orders.filter(order => {
-          // 根據搜尋關鍵字篩選(顧客姓名)
-          return order.customerName.toLowerCase().includes(this.searchQuery.toLowerCase());
+          return order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
         });
       }
 
-      const filtered = this.orders.filter(order => {
+      return this.orders.filter(order => {
         const orderDate = new Date(order.orderDate);
 
-        // 根據日期篩選
         let dateMatch = false;
         if (this.filterDate === 'today') {
           dateMatch = orderDate.toDateString() === today.toDateString();
@@ -236,23 +200,17 @@ export default {
           dateMatch = orderDate >= today && orderDate <= oneWeekLater;
         }
 
-        // 根據搜尋關鍵字篩選
-        const searchMatch = order.customerName.toLowerCase().includes(this.searchQuery.toLowerCase());
-
+        const searchMatch = order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
         return dateMatch && searchMatch;
       });
-
-      console.log('Filtered Orders:', filtered); // 印出過濾後的訂單
-      return filtered;
-    },
+    }
   },
 
-
   methods: {
-    handleSearch() {
-      // 搜索功能由 filteredOrders 計算屬性自動處理，所以這裡不需要額外邏輯
-      console.log("Searching for:", this.searchQuery);
-      this.searchQuery = '';  // 清空搜尋欄
+    formatDate(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('zh-TW');
     },
 
     async getData() {
@@ -265,32 +223,15 @@ export default {
       }
     },
 
-    async getDataByOrderId(orderID) {
+    async getDataByOrderId(orderId) {
       try {
-        const response = await axios.get(`http://localhost:8080/api/orders/${orderID}`);
-        // 直接使用響應式賦值
+        const response = await axios.get(`http://localhost:8080/api/orders/${orderId}`);
         this.orderDetails = {
-          ...this.orderDetails,   // 保留原有的所有訂單數據
-          [orderID]: response.data   // 添加新的訂單數據
+          ...this.orderDetails,
+          [orderId]: response.data
         };
       } catch (error) {
-        console.error('獲取訂單詳情失敗:', error);
-      }
-    },
-
-    // 獲取特定訂單的詳細品項
-    getOrderItems(orderID) {
-      return this.orderDetails[orderID] || [];
-    },
-
-
-    async search() {
-      try {
-        const response = await axios.get(`http://localhost:8080/api/orders/name/${this.keyword}`);
-        this.orders = response.data;
-        console.log("Search results:", this.orders);
-      } catch (error) {
-        console.error("Error searching orders:", error);
+        console.error('Error fetching order details:', error);
       }
     },
 
@@ -298,26 +239,21 @@ export default {
       this.selectedOrder = order;
     },
 
-    // 取消訂單
     async deleteOrder() {
+      if (!this.selectedOrder) return;
+
       try {
-        this.selectedOrder.orderStatusID = 7;
-        await axios.put("http://localhost:8080/api/orders", this.selectedOrder, {
-          headers: {
-            "Content-Type": "application/json",
-          }
-        });
+        await axios.put(`http://localhost:8080/api/orders/${this.selectedOrder.orderId}/cancel`);
         await this.getData(); // 重新取得訂單資料
       } catch (error) {
-        console.error("Error deleting order:", error);
+        console.error("Error canceling order:", error);
       }
-    },
-
+    }
   },
 
   created() {
     this.getData();
-  },
+  }
 };
 </script>
 
