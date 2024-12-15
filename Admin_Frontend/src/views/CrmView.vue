@@ -71,14 +71,14 @@
         <table>
           <thead>
             <tr>
-              <th>場地ID</th>
+              <th>場地名稱</th>
               <th>預訂次數</th>
               <th>使用率</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="stat in venueStats" :key="stat.venueId">
-              <td>{{ stat.venueId }}</td>
+              <td>{{ stat.venueName }}</td>
               <td>{{ stat.reservedTimes }}</td>
               <td>{{ stat.usageRate.toFixed(2) }}%</td>
             </tr>
@@ -202,7 +202,7 @@ export default defineComponent({
     },
     venueChartData() {
       return {
-        labels: this.venueStats.map(stat => `場地 ${stat.venueId}`),
+        labels: this.venueStats.map(stat => `場地 ${stat.venueName}`),
         datasets: [{
           label: '使用率',
           data: this.venueStats.map(stat => stat.usageRate),
