@@ -1,10 +1,13 @@
-// StatisticsView.vue
 <template>
   <div class="statistics-container">
     <div class="card">
-      <h2>月度預約統計</h2>
-      <div style="height: 300px;">
-        <line-chart v-if="monthlyStats.length" :data="monthlyChartData" :options="lineChartOptions" />
+      <h2>月度預訂統計</h2>
+      <div style="height: 300px; position: relative;">
+        <Line
+          v-if="monthlyStats.length"
+          :data="monthlyChartData"
+          :options="lineChartOptions"
+        />
       </div>
       <div class="table-container">
         <table>
@@ -28,8 +31,12 @@
 
     <div class="card">
       <h2>支付方式分析</h2>
-      <div style="height: 300px;">
-        <pie-chart v-if="paymentStats.length" :data="paymentChartData" :options="pieChartOptions" />
+      <div style="height: 300px; position: relative;">
+        <Pie
+          v-if="paymentStats.length"
+          :data="paymentChartData"
+          :options="pieChartOptions"
+        />
       </div>
       <div class="table-container">
         <table>
@@ -53,8 +60,12 @@
 
     <div class="card">
       <h2>場地使用率</h2>
-      <div style="height: 300px;">
-        <bar-chart v-if="venueStats.length" :data="venueChartData" :options="barChartOptions" />
+      <div style="height: 300px; position: relative;">
+        <Bar
+          v-if="venueStats.length"
+          :data="venueChartData"
+          :options="barChartOptions"
+        />
       </div>
       <div class="table-container">
         <table>
@@ -82,72 +93,36 @@
 import { defineComponent } from 'vue'
 import {
   Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
-  Legend,
   ArcElement,
-  BarElement
 } from 'chart.js'
+import { Line, Bar, Pie } from 'vue-chartjs'
 
 ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  BarElement
+  ArcElement
 )
-
-// 自定義圖表組件
-const LineChart = defineComponent({
-  extends: ChartJS,
-  props: ['data', 'options'],
-  mounted() {
-    new ChartJS(this.$el, {
-      type: 'line',
-      data: this.data,
-      options: this.options
-    })
-  }
-})
-
-const PieChart = defineComponent({
-  extends: ChartJS,
-  props: ['data', 'options'],
-  mounted() {
-    new ChartJS(this.$el, {
-      type: 'pie',
-      data: this.data,
-      options: this.options
-    })
-  }
-})
-
-const BarChart = defineComponent({
-  extends: ChartJS,
-  props: ['data', 'options'],
-  mounted() {
-    new ChartJS(this.$el, {
-      type: 'bar',
-      data: this.data,
-      options: this.options
-    })
-  }
-})
 
 export default defineComponent({
   name: 'CrmView',
   components: {
-    LineChart,
-    PieChart,
-    BarChart
+    Line,
+    Bar,
+    Pie
   },
   data() {
     return {
@@ -159,34 +134,34 @@ export default defineComponent({
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'top'
-          }
-        }
+            position: 'top',
+          },
+        },
       },
       pieChartOptions: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'right'
-          }
-        }
+            position: 'right',
+          },
+        },
       },
       barChartOptions: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: 'top'
-          }
+            position: 'top',
+          },
         },
         scales: {
           y: {
             beginAtZero: true,
-            max: 100
-          }
-        }
-      }
+            max: 100,
+          },
+        },
+      },
     }
   },
   computed: {
@@ -198,14 +173,14 @@ export default defineComponent({
             label: '預訂數量',
             data: this.monthlyStats.map(stat => stat.totalReservations),
             borderColor: '#2196F3',
-            backgroundColor: '#2196F3',
+            backgroundColor: 'rgba(33, 150, 243, 0.5)',
             tension: 0.1
           },
           {
             label: '總收入',
             data: this.monthlyStats.map(stat => stat.totalRevenue),
             borderColor: '#4CAF50',
-            backgroundColor: '#4CAF50',
+            backgroundColor: 'rgba(76, 175, 80, 0.5)',
             tension: 0.1
           }
         ]
@@ -216,7 +191,12 @@ export default defineComponent({
         labels: this.paymentStats.map(stat => stat.paymentMethod),
         datasets: [{
           data: this.paymentStats.map(stat => stat.percentage),
-          backgroundColor: ['#FF9800', '#2196F3', '#4CAF50', '#F44336']
+          backgroundColor: [
+            'rgba(255, 152, 0, 0.8)',
+            'rgba(33, 150, 243, 0.8)',
+            'rgba(76, 175, 80, 0.8)',
+            'rgba(244, 67, 54, 0.8)'
+          ]
         }]
       }
     },
@@ -226,7 +206,7 @@ export default defineComponent({
         datasets: [{
           label: '使用率',
           data: this.venueStats.map(stat => stat.usageRate),
-          backgroundColor: '#2196F3'
+          backgroundColor: 'rgba(33, 150, 243, 0.8)'
         }]
       }
     }
@@ -283,7 +263,7 @@ export default defineComponent({
   background: white;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .table-container {
@@ -296,8 +276,7 @@ table {
   border-collapse: collapse;
 }
 
-th,
-td {
+th, td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #eee;

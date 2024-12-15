@@ -28,7 +28,7 @@ npm run dev
 npm run build
 ```
 
-### chart
+### vue-chart
 ```sh
-npm install chart.js
+npm install vue-chartjs chart.js
 ```
