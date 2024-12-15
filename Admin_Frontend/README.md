@@ -27,3 +27,8 @@ npm run dev
 ```sh
 npm run build
 ```
+
+### chart
+```sh
+npm install chart.js
+```
