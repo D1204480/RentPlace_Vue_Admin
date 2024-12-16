@@ -288,6 +288,12 @@ export default {
   border-color: #3F3F3F;
 }
 
+.btn-warning:hover {
+    color: #fff;
+    background-color: #262626;
+    border-color: #262626;
+}
+
 /* Store navBar */
 .nav-link.active {
   color: black !important;
