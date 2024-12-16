@@ -2,7 +2,7 @@
 
   <body class="d-flex flex-column min-vh-100">
 
-    <!-- 營業管理 storeNavBar -->
+    <!-- 營業管理 storeNavBar
     <div class="container-fluid fs-6">
       <ul class="nav nav-tabs">
         <li class="nav-item">
@@ -19,14 +19,14 @@
           <RouterLink to="/StoreInfoView" class="nav-link link-success">餐廳資訊</RouterLink>
         </li>
       </ul>
-    </div>
+    </div> -->
 
     <!-- 搜尋與排序 search with checkboxes -->
-    <div class="container-fluid mt-3 mb-3">
+    <div class="container-fluid mt-4 mb-3">
       <div style="max-width: 800px;">
         <form class="d-flex align-items-start" @submit.prevent="handleSearch">
           <!-- 搜尋框 -->
-          <input class="form-control form-control-sm me-2" type="search" placeholder="Search" aria-label="Search"
+          <input class="form-control form-control-sm me-2" type="search" placeholder="請輸入關鍵字" aria-label="Search"
             v-model="searchQuery">
           <button class="btn btn-sm btn-outline-success me-3" type="submit">Search</button>
 
@@ -258,6 +258,30 @@ export default {
 </script>
 
 <style scoped>
+/* 搜尋框 */
+.btn-outline-success {
+    color: #3F3F3F;
+    border-color: #3F3F3F;
+}
+
+.btn-outline-success:hover {
+    color: #fff;
+    background-color: #3F3F3F;
+    border-color: #3F3F3F;
+}
+
+.btn-outline-success:active,
+.btn-outline-success.active,
+.btn-check:checked + .btn-outline-success {
+    color: #fff;
+    background-color: #3F3F3F;
+    border-color: #3F3F3F;
+}
+
+.btn-outline-success:focus {
+    box-shadow: 0 0 0 0.25rem rgba(63, 63, 63, 0.5);
+}
+
 /* Store navBar */
 .nav-link.active {
   color: black !important;

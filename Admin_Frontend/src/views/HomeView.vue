@@ -1,9 +1,7 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import Crm from "../components/Crm.vue"
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <Crm />
 </template>
