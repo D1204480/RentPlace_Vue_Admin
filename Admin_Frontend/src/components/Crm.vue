@@ -160,15 +160,15 @@ export default defineComponent({
           {
             label: '預訂數量',
             data: this.monthlyStats.map(stat => stat.totalReservations),
-            borderColor: '#2196F3',
-            backgroundColor: 'rgba(33, 150, 243, 0.5)',
+            borderColor: /*'#2196F3'*/   '#3f3f3f',
+            backgroundColor: /*'rgba(33, 150, 243, 0.5)',*/ '#3f3f3f', 
             tension: 0.1
           },
           {
             label: '總收入',
             data: this.monthlyStats.map(stat => stat.totalRevenue),
-            borderColor: '#4CAF50',
-            backgroundColor: 'rgba(76, 175, 80, 0.5)',
+            borderColor: /*'#4CAF50'*/ '#c0783e',
+            backgroundColor: /*'rgba(76, 175, 80, 0.5)',*/ '#c0783e',
             tension: 0.1
           }
         ]
@@ -180,10 +180,10 @@ export default defineComponent({
         datasets: [{
           data: this.paymentStats.map(stat => stat.percentage),
           backgroundColor: [
-            'rgba(255, 152, 0, 0.8)',
-            'rgba(33, 150, 243, 0.8)',
-            'rgba(76, 175, 80, 0.8)',
-            'rgba(244, 67, 54, 0.8)'
+            /*'rgba(255, 152, 0, 0.8)'*/   '#3f3f3f',
+            /*'rgba(33, 150, 243, 0.8)',*/   '#c0783e',
+            /*'rgba(76, 175, 80, 0.8)',*/
+            /*'rgba(244, 67, 54, 0.8)'*/
           ]
         }]
       }
@@ -194,7 +194,7 @@ export default defineComponent({
         datasets: [{
           label: '使用率',
           data: this.venueStats.map(stat => stat.usageRate),
-          backgroundColor: 'rgba(33, 150, 243, 0.8)'
+          backgroundColor: /*'rgba(33, 150, 243, 0.8)'*/  '#c0783e'
         }]
       }
     }
