@@ -77,7 +77,7 @@
                   <th scope="row">{{ order.orderId }}</th>
                   <td>{{ formatDate(order.orderDate) }}</td>
                   <td>{{ order.userId }}</td>
-                  <td>{{ order.payment?.paymentMethodDisplay || '-' }}</td>
+                  <td>{{ order.reservation.venue.venueName }}</td>
                   <td>{{ order.status?.status || '-' }}</td>
                   <td style="white-space: nowrap;">
                     <a class="btn btn-warning btn-sm btn-xs btn-block" :data-bs-toggle="'collapse'"
@@ -113,18 +113,18 @@
                         <table class="table mb-3 table-borderless table-responsive table-warning text-start">
                           <thead class="td-border-line">
                             <tr>
-                              <th scope="col">預約日期</th>
-                              <th scope="col">時段</th>
-                              <th scope="col">預約人數</th>
+                              <th scope="col">預約使用日期</th>
+                              <th scope="col">預約時段</th>
+                              <th scope="col">預約單位</th>
                               <th scope="col">備註</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr>
                               <td>{{ formatDate(order.reservation?.reservationDate) }}</td>
-                              <td>{{ order.reservation?.timePeriod?.period || '-' }}</td>
-                              <td>{{ order.reservation?.numberOfPeople || '-' }}</td>
-                              <td>{{ order.reservation?.note || '-' }}</td>
+                              <td>{{ order.reservation?.timePeriodText || '-' }}</td>
+                              <td>{{ order.reservation?.applyApartment || '-' }}</td>
+                              <td>{{ order.reservation?.remark || '-' }}</td>
                             </tr>
                           </tbody>
                         </table>
