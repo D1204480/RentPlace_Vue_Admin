@@ -60,9 +60,9 @@
           <table class="table">
             <thead style="white-space: nowrap;">
               <tr>
-                <th scope="col">訂單編號</th>
+                <th scope="col">序號</th>
                 <th scope="col">訂單日期</th>
-                <th scope="col">預約者編號</th>
+                <th scope="col">訂單編號</th>
                 <th scope="col">付款方式</th>
                 <th scope="col">訂單狀態</th>
                 <th scope="col">訂單內容</th>
@@ -71,12 +71,12 @@
             </thead>
             <tbody>
               <!-- 將每個訂單資料和其對應的 collapse 內容放在一起 -->
-              <template v-for="order in filteredOrders" :key="order.orderId">
+              <template v-for="(order, index) in filteredOrders" :key="order.orderId">
                 <!-- 訂單資料行 -->
                 <tr>
-                  <th scope="row">{{ order.orderId }}</th>
+                  <th scope="row">{{ index + 1 }}</th>
                   <td>{{ formatDate(order.orderDate) }}</td>
-                  <td>{{ order.userId }}</td>
+                  <td>{{ order.orderId}}</td>
                   <td>{{ order.reservation.venue.venueName }}</td>
                   <td>{{ order.status?.status || '-' }}</td>
                   <td style="white-space: nowrap;">

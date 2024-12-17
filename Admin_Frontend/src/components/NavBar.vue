@@ -1,8 +1,8 @@
 <template>
   <nav class="navbar">
     <a href="#" class="brand">
-      <div class="brand-title">運動中心</div>
-      <div class="brand-subtitle">Sports Center</div>
+      <div class="brand-title">場館預約</div>
+      <div class="brand-subtitle">Venue Reservation</div>
     </a>
     <div class="auth-buttons">
       <RouterLink to="/register" href="#" class="register-btn">註冊</RouterLink>
