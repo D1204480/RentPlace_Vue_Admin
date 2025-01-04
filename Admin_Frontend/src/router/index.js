@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import OrderView from '../views/OrderView.vue'
 import CrmView from '../views/CrmView.vue'
-
+import VenueView from '../views/VenueView.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -28,6 +28,11 @@ const router = createRouter({
       path: '/crm',
       name: 'crm',
       component: CrmView
+    },
+    {
+      path: '/venue',
+      name: 'venue',
+      component: VenueView,
     },
   ]
 })
