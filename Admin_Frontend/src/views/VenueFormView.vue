@@ -343,9 +343,8 @@ const fetchVenueData = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/venues/${id}`)
       const venueData = response.data
-
-      // 更新表單數據，包括 id
-      formData.id = venueData.id
+      
+      // 直接賦值所有欄位
       formData.placeName = venueData.placeName
       formData.venueType = venueData.venueType
       formData.venueName = venueData.venueName
@@ -370,48 +369,46 @@ const fetchVenueData = async () => {
 // 處理表單提交
 const handleSubmit = async () => {
   try {
-    // 在送出前先打印看看數據內容
-    console.log('原始表單數據:', formData)
+    // 處理 equipment 和 closeDates 的格式
+    const simplifiedEquipment = formData.equipment.map(eq => 
+      typeof eq === 'string' ? eq : eq.equipmentName
+    )
+
+    const simplifiedCloseDates = formData.closeDates.map(date => 
+      typeof date === 'string' ? date : date.closeDate
+    )
 
     const apiData = {
-      id: parseInt(formData.id),          // 確保是數字
-      placeName: String(formData.placeName),    // 確保是字串
-      venueType: String(formData.venueType),    // 確保是字串
-      venueName: String(formData.venueName),    // 確保是字串
-      regionName: String(formData.regionName),  // 確保是字串
-      address: String(formData.address),        // 確保是字串
-      unitPrice: parseFloat(formData.unitPrice), // 確保是數字
-      unit: String(formData.unit),              // 確保是字串
-      capacity: parseInt(formData.capacity),     // 確保是數字
-      availableTime: String(formData.availableTime), // 確保是字串
-      remark: formData.remark ? String(formData.remark) : null,
-      imageId: formData.imageId ? parseInt(formData.imageId) : null,  // 確保是數字或 null
-      imageName: String(formData.imageName),    // 確保是字串
-      phoneNumber: String(formData.phoneNumber), // 確保是字串
-      equipment: Array.isArray(formData.equipment) ? formData.equipment : [], // 確保是陣列
-      closeDates: Array.isArray(formData.closeDates) ? formData.closeDates : [] // 確保是陣列
+      placeName: formData.placeName,
+      venueType: formData.venueType,
+      venueName: formData.venueName,
+      regionName: formData.regionName,
+      address: formData.address,
+      unitPrice: parseFloat(formData.unitPrice),
+      unit: formData.unit,
+      capacity: parseInt(formData.capacity),
+      availableTime: formData.availableTime,
+      remark: formData.remark || null,
+      imageId: formData.imageId || null,
+      imageName: formData.imageName || null,
+      phoneNumber: formData.phoneNumber,
+      equipment: simplifiedEquipment,
+      closeDates: simplifiedCloseDates
     }
 
-    console.log('準備送出的數據:', apiData)
+    console.log('準備送出的數據:', JSON.stringify(apiData))
 
     if (isEdit.value) {
       const response = await axios.put(`http://localhost:8080/api/venues/${route.params.id}`, apiData)
-      console.log('PUT 響應:', response.data)
+      console.log('PUT 成功:', response.data)
     } else {
-      const response = await axios.post('http://localhost:8080/api/venues', apiData)
-      console.log('POST 響應:', response.data)
+      await axios.post('http://localhost:8080/api/venues', apiData)
     }
     router.push('/venues')
   } catch (error) {
     console.error('保存失敗:', error)
     if (error.response) {
-      console.error('錯誤狀態:', error.response.status)
       console.error('錯誤詳情:', error.response.data)
-      console.error('錯誤標頭:', error.response.headers)
-    } else if (error.request) {
-      console.error('請求錯誤:', error.request)
-    } else {
-      console.error('錯誤訊息:', error.message)
     }
   }
 }
