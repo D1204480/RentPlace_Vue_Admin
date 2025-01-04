@@ -171,34 +171,37 @@ const venueTypes = [
 ]
 
 // 定義行政區選項
+// 定義行政區選項
 const regions = [
-  // 北部地區
-  { value: 'taipei', label: '臺北市' },
-  { value: 'newtaipei', label: '新北市' },
-  { value: 'keelung', label: '基隆市' },
-  { value: 'taoyuan', label: '桃園市' },
-  { value: 'hsinchu_city', label: '新竹市' },
-  { value: 'hsinchu_county', label: '新竹縣' },
-  { value: 'yilan', label: '宜蘭縣' },
-  // 中部地區
-  { value: 'miaoli', label: '苗栗縣' },
-  { value: 'taichung', label: '臺中市' },
-  { value: 'changhua', label: '彰化縣' },
-  { value: 'nantou', label: '南投縣' },
-  { value: 'yunlin', label: '雲林縣' },
-  // 南部地區
-  { value: 'chiayi_city', label: '嘉義市' },
-  { value: 'chiayi_county', label: '嘉義縣' },
-  { value: 'tainan', label: '臺南市' },
-  { value: 'kaohsiung', label: '高雄市' },
-  { value: 'pingtung', label: '屏東縣' },
-  // 東部地區
-  { value: 'hualien', label: '花蓮縣' },
-  { value: 'taitung', label: '臺東縣' },
-  // 離島地區
-  { value: 'penghu', label: '澎湖縣' },
-  { value: 'kinmen', label: '金門縣' },
-  { value: 'lienchiang', label: '連江縣' }
+  { value: 'central', label: '中區' },
+  { value: 'east', label: '東區' },
+  { value: 'west', label: '西區' },
+  { value: 'south', label: '南區' },
+  { value: 'north', label: '北區' },
+  { value: 'xitun', label: '西屯區' },
+  { value: 'nantun', label: '南屯區' },
+  { value: 'beitun', label: '北屯區' },
+  { value: 'fengyuan', label: '豐原區' },
+  { value: 'dongshi', label: '東勢區' },
+  { value: 'dajia', label: '大甲區' },
+  { value: 'qingshui', label: '清水區' },
+  { value: 'shalu', label: '沙鹿區' },
+  { value: 'wuqi', label: '梧棲區' },
+  { value: 'houli', label: '后里區' },
+  { value: 'dadu', label: '大肚區' },
+  { value: 'daya', label: '大雅區' },
+  { value: 'tanzi', label: '潭子區' },
+  { value: 'shengang', label: '神岡區' },
+  { value: 'wuri', label: '烏日區' },
+  { value: 'longjing', label: '龍井區' },
+  { value: 'wufeng', label: '霧峰區' },
+  { value: 'taiping', label: '太平區' },
+  { value: 'dali', label: '大里區' },
+  { value: 'waipu', label: '外埔區' },
+  { value: 'daan', label: '大安區' },
+  { value: 'shigang', label: '石岡區' },
+  { value: 'xinshe', label: '新社區' },
+  { value: 'heping', label: '和平區' }
 ]
 
 // 定義計價單位選項
@@ -365,7 +368,7 @@ const fetchVenueData = async () => {
       formData.closeDates = venueData.closeDates.map(date => 
         typeof date === 'string' ? date : date.closeDate
       )
-      
+
     } catch (error) {
       console.error('獲取場地數據失敗:', error)
     }
