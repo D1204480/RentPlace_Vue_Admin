@@ -15,7 +15,7 @@
           </li>
           <li class="nav-item">
             <RouterLink 
-              to="/venue" 
+              to="/venues" 
               class="nav-link"
               :class="{ 'active': isReservationActive }"
             >
@@ -39,7 +39,7 @@
     return route.path === '/reservation' || 
     route.path.includes('/cardInfoView/') ||
     route.path.includes('/bookingCardView') ||
-    route.path.includes('/venue')
+    route.path.includes('/venues')
   })
   </script>
   
