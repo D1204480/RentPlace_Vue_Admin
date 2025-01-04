@@ -61,17 +61,24 @@
           <input type="number" id="capacity" class="form-input" v-model="formData.capacity" required>
         </div>
 
-        <!-- 將可用時間的 input 改為時段選擇 -->
+        <div class="form-group">
+          <label class="form-label" for="availableTime">營業時間</label>
+          <input type="text" id="availableTime" class="form-input" v-model="formData.availableTime" required>
+        </div>
+
+         <!-- 時段選擇部分
         <div class="form-group full-width">
-          <label class="form-label">可用時間</label>
+          <label class="form-label">可預約時段</label>
           <div class="time-slots-grid">
+             個別時段
             <div v-for="(value, key) in timeSlots" :key="key" class="time-slot-item">
               <label class="time-slot-label">
-                <input type="checkbox" :value="value" v-model="formData.availableTime" class="time-slot-checkbox">
+                <input type="checkbox" :value="value.toString()" v-model="formData.availableTime"
+                  class="time-slot-checkbox">
                 <span class="time-slot-text">{{ key }}</span>
               </label>
             </div>
-            <!-- 整天選項 -->
+             整天選項 
             <div class="time-slot-item">
               <label class="time-slot-label">
                 <input type="checkbox" value="16" v-model="formData.availableTime" @change="handleAllDayChange"
@@ -80,7 +87,7 @@
               </label>
             </div>
           </div>
-        </div>
+        </div>  -->
 
         <div class="form-group">
           <label class="form-label" for="phoneNumber">電話號碼</label>
@@ -90,6 +97,10 @@
         <div class="form-group">
           <label class="form-label" for="imageName">圖片上傳</label>
           <input type="file" id="imageName" class="form-input" @change="handleImageUpload" accept="image/*">
+          <!-- 預覽圖片 -->
+          <div v-if="imagePreview" class="image-preview">
+            <img :src="imagePreview" alt="預覽" class="preview-img">
+          </div>
         </div>
 
         <!-- 設備清單 -->
@@ -131,7 +142,7 @@
           返回
         </router-link>
         <button type="submit" class="btn btn-primary">
-          {{ isEdit ? '更新' : '創建' }}
+          {{ isEdit ? '更新' : '新增' }}
         </button>
       </div>
 
@@ -195,23 +206,23 @@ const unitTypes = [
 ]
 
 // 定義時段選項
-const timeSlots = {
-  "07:00-08:00": 1,
-  "08:00-09:00": 2,
-  "09:00-10:00": 3,
-  "10:00-11:00": 4,
-  "11:00-12:00": 5,
-  "12:00-13:00": 6,
-  "13:00-14:00": 7,
-  "14:00-15:00": 8,
-  "15:00-16:00": 9,
-  "16:00-17:00": 10,
-  "17:00-18:00": 11,
-  "18:00-19:00": 12,
-  "19:00-20:00": 13,
-  "20:00-21:00": 14,
-  "21:00-22:00": 15
-}
+// const timeSlots = {
+//   "07:00-08:00": 1,
+//   "08:00-09:00": 2,
+//   "09:00-10:00": 3,
+//   "10:00-11:00": 4,
+//   "11:00-12:00": 5,
+//   "12:00-13:00": 6,
+//   "13:00-14:00": 7,
+//   "14:00-15:00": 8,
+//   "15:00-16:00": 9,
+//   "16:00-17:00": 10,
+//   "17:00-18:00": 11,
+//   "18:00-19:00": 12,
+//   "19:00-20:00": 13,
+//   "20:00-21:00": 14,
+//   "21:00-22:00": 15
+// }
 
 // 設備選項
 const equipmentOptions = [
@@ -225,6 +236,7 @@ const equipmentOptions = [
 ]
 
 const formData = reactive({
+  id: null,           // 添加 id 欄位
   placeName: '',
   venueType: '',
   venueName: '',
@@ -233,8 +245,9 @@ const formData = reactive({
   unitPrice: null,
   unit: '時',
   capacity: null,
-  availableTime: '',  // 將從時段選擇轉換為字串
+  availableTime: '',
   remark: null,
+  imageId: null,      // 添加 imageId 欄位
   imageName: '',
   phoneNumber: '',
   equipment: [],
@@ -254,20 +267,32 @@ const removeCloseDate = (index) => {
   formData.closeDates.splice(index, 1)
 }
 
-// 轉換時段選擇為 API 格式
+// 時段處理函數
 const convertTimeSlots = (selectedSlots) => {
+  if (!Array.isArray(selectedSlots)) {
+    return ''
+  }
+
+  // 如果選擇整天
   if (selectedSlots.includes('16')) {
     return '07:00-22:00'
   }
 
-  const slotTimes = selectedSlots.map(slot => {
-    const time = Object.entries(timeSlots).find(([_, value]) => value.toString() === slot)
-    return time ? time[0] : null
-  }).filter(Boolean)
+  // 轉換選中的時段編號為時間字串
+  const selectedTimes = selectedSlots
+    .map(Number)
+    .sort((a, b) => a - b)
+    .map(slot => {
+      const timeEntry = Object.entries(timeSlots).find(([_, value]) => value === slot)
+      return timeEntry ? timeEntry[0] : null
+    })
+    .filter(Boolean)
 
-  if (slotTimes.length > 0) {
-    const sortedSlots = slotTimes.sort()
-    return `${sortedSlots[0].split('-')[0]}-${sortedSlots[sortedSlots.length - 1].split('-')[1]}`
+  if (selectedTimes.length > 0) {
+    // 取第一個時段的開始時間和最後一個時段的結束時間
+    const startTime = selectedTimes[0].split('-')[0]
+    const endTime = selectedTimes[selectedTimes.length - 1].split('-')[1]
+    return `${startTime}-${endTime}`
   }
 
   return ''
@@ -292,6 +317,22 @@ watch(() => formData.availableTime, (newValue) => {
   }
 }, { deep: true })
 
+const imagePreview = ref(null)
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    formData.imageName = file.name
+
+    // 創建預覽
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      imagePreview.value = e.target.result
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
 // 如果是編輯模式，獲取場地數據
 const fetchVenueData = async () => {
   const id = route.params.id
@@ -301,12 +342,23 @@ const fetchVenueData = async () => {
       const response = await axios.get(`http://localhost:8080/api/venues/${id}`)
       const venueData = response.data
       
-      // 更新表單數據
-      Object.keys(formData).forEach(key => {
-        if (venueData[key] !== undefined) {
-          formData[key] = venueData[key]
-        }
-      })
+      // 更新表單數據，包括 id
+      formData.id = venueData.id
+      formData.placeName = venueData.placeName
+      formData.venueType = venueData.venueType
+      formData.venueName = venueData.venueName
+      formData.regionName = venueData.regionName
+      formData.address = venueData.address
+      formData.unitPrice = venueData.unitPrice
+      formData.unit = venueData.unit
+      formData.capacity = venueData.capacity
+      formData.availableTime = venueData.availableTime
+      formData.remark = venueData.remark
+      formData.imageId = venueData.imageId
+      formData.imageName = venueData.imageName
+      formData.phoneNumber = venueData.phoneNumber
+      formData.equipment = venueData.equipment || []
+      formData.closeDates = venueData.closeDates || []
     } catch (error) {
       console.error('獲取場地數據失敗:', error)
     }
@@ -316,21 +368,49 @@ const fetchVenueData = async () => {
 // 處理表單提交
 const handleSubmit = async () => {
   try {
+    // 在送出前先打印看看數據內容
+    console.log('原始表單數據:', formData)
+
     const apiData = {
-      ...formData,
-      unitPrice: parseFloat(formData.unitPrice),
-      capacity: parseInt(formData.capacity),
-      availableTime: convertTimeSlots(formData.availableTime)
+      id: parseInt(formData.id),          // 確保是數字
+      placeName: String(formData.placeName),    // 確保是字串
+      venueType: String(formData.venueType),    // 確保是字串
+      venueName: String(formData.venueName),    // 確保是字串
+      regionName: String(formData.regionName),  // 確保是字串
+      address: String(formData.address),        // 確保是字串
+      unitPrice: parseFloat(formData.unitPrice), // 確保是數字
+      unit: String(formData.unit),              // 確保是字串
+      capacity: parseInt(formData.capacity),     // 確保是數字
+      availableTime: String(formData.availableTime), // 確保是字串
+      remark: formData.remark ? String(formData.remark) : null,
+      imageId: formData.imageId ? parseInt(formData.imageId) : null,  // 確保是數字或 null
+      imageName: String(formData.imageName),    // 確保是字串
+      phoneNumber: String(formData.phoneNumber), // 確保是字串
+      equipment: Array.isArray(formData.equipment) ? formData.equipment : [], // 確保是陣列
+      closeDates: Array.isArray(formData.closeDates) ? formData.closeDates : [] // 確保是陣列
     }
 
+    console.log('準備送出的數據:', apiData)
+
     if (isEdit.value) {
-      await axios.put(`http://localhost:8080/api/venues/${route.params.id}`, apiData)
+      const response = await axios.put(`http://localhost:8080/api/venues/${route.params.id}`, apiData)
+      console.log('PUT 響應:', response.data)
     } else {
-      await axios.post('http://localhost:8080/api/venues', apiData)
+      const response = await axios.post('http://localhost:8080/api/venues', apiData)
+      console.log('POST 響應:', response.data)
     }
     router.push('/venues')
   } catch (error) {
     console.error('保存失敗:', error)
+    if (error.response) {
+      console.error('錯誤狀態:', error.response.status)
+      console.error('錯誤詳情:', error.response.data)
+      console.error('錯誤標頭:', error.response.headers)
+    } else if (error.request) {
+      console.error('請求錯誤:', error.request)
+    } else {
+      console.error('錯誤訊息:', error.message)
+    }
   }
 }
 
@@ -536,5 +616,16 @@ onMounted(() => {
 
 .btn-remove:hover {
   color: #c82333;
+}
+
+.image-preview {
+  margin-top: 10px;
+  max-width: 200px;
+}
+
+.preview-img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
 }
 </style>
