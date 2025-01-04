@@ -115,7 +115,7 @@
             </div>
           </div>
 
-          <!-- 關閉日期 -->
+          <!-- 休館日期 -->
           <div class="form-group full-width">
             <label class="form-label">休館日期</label>
             <input type="date" v-model="newCloseDate" class="form-input mb-2">
@@ -360,6 +360,12 @@ const fetchVenueData = async () => {
       formData.phoneNumber = venueData.phoneNumber
       formData.equipment = venueData.equipment || []
       formData.closeDates = venueData.closeDates || []
+
+      // 處理關閉日期格式
+      formData.closeDates = venueData.closeDates.map(date => 
+        typeof date === 'string' ? date : date.closeDate
+      )
+      
     } catch (error) {
       console.error('獲取場地數據失敗:', error)
     }
