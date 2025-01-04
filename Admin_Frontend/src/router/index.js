@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import OrderView from '../views/OrderView.vue'
 import CrmView from '../views/CrmView.vue'
 import VenueView from '../views/VenueView.vue'
+import VenueForm from '../views/VenueFormView.vue'
 
 
 const router = createRouter({
@@ -32,11 +33,37 @@ const router = createRouter({
       component: CrmView
     },
     {
-      path: '/venue',
-      name: 'venue',
-      component: VenueView
+      path: '/venues',
+      name: 'venues',
+      component: VenueView,
+      meta: {
+        title: '場地管理'
+      }
     },
+    {
+      path: '/venues/create',
+      name: 'VenueCreate',
+      component: VenueForm,
+      meta: {
+        title: '新增場地'
+      }
+    },
+    {
+      path: '/venues/:id/edit',
+      name: 'VenueEdit',
+      component: VenueForm,
+      props: true,
+      meta: {
+        title: '編輯場地'
+      }
+    }
   ]
+})
+
+// 路由標題
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title || '場地管理系統'
+  next()
 })
 
 export default router
