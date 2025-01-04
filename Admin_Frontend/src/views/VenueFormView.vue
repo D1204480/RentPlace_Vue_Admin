@@ -1,72 +1,73 @@
 <!-- VenueForm.vue -->
 <template>
-  <div class="container-fluid mt-4">
-    <div class="header mb-6">
-      <h1 class="text-2xl font-bold">{{ isEdit ? '編輯場地' : '新增場地' }}</h1>
-    </div>
+  <div class="form-container">
+    <div class="form-wrapper">
+      <div class="header mb-6">
+        <h1 class="text-center mb-3 font-bold">{{ isEdit ? '編輯場地' : '新增場地' }}</h1>
+      </div>
 
-    <form @submit.prevent="handleSubmit">
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label" for="placeName">場地名稱</label>
-          <input type="text" id="placeName" class="form-input" v-model="formData.placeName" required>
-        </div>
+      <form @submit.prevent="handleSubmit">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="placeName">場地名稱</label>
+            <input type="text" id="placeName" class="form-input" v-model="formData.placeName" required>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="venueType">場地類型</label>
-          <select id="venueType" class="form-select" v-model="formData.venueType" required>
-            <option value="">請選擇場地類型</option>
-            <option v-for="type in venueTypes" :key="type.value" :value="type.value">
-              {{ type.label }}
-            </option>
-          </select>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="venueType">場地類型</label>
+            <select id="venueType" class="form-select" v-model="formData.venueType" required>
+              <option value="">請選擇場地類型</option>
+              <option v-for="type in venueTypes" :key="type.value" :value="type.value">
+                {{ type.label }}
+              </option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="venueName">場館名稱</label>
-          <input type="text" id="venueName" class="form-input" v-model="formData.venueName" required>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="venueName">場館名稱</label>
+            <input type="text" id="venueName" class="form-input" v-model="formData.venueName" required>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="regionName">行政區</label>
-          <select id="regionName" class="form-select" v-model="formData.regionName" required>
-            <option value="">請選擇行政區</option>
-            <option v-for="region in regions" :key="region.value" :value="region.label">
-              {{ region.label }}
-            </option>
-          </select>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="regionName">行政區</label>
+            <select id="regionName" class="form-select" v-model="formData.regionName" required>
+              <option value="">請選擇行政區</option>
+              <option v-for="region in regions" :key="region.value" :value="region.label">
+                {{ region.label }}
+              </option>
+            </select>
+          </div>
 
-        <div class="form-group full-width">
-          <label class="form-label" for="address">地址</label>
-          <input type="text" id="address" class="form-input" v-model="formData.address" required>
-        </div>
+          <div class="form-group full-width">
+            <label class="form-label" for="address">地址</label>
+            <input type="text" id="address" class="form-input" v-model="formData.address" required>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="unitPrice">單價</label>
-          <input type="number" id="unitPrice" class="form-input" v-model="formData.unitPrice" required>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="unitPrice">單價</label>
+            <input type="number" id="unitPrice" class="form-input" v-model="formData.unitPrice" required>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="unit">計價單位</label>
-          <select id="unit" class="form-select" v-model="formData.unit" required>
-            <option v-for="unit in unitTypes" :key="unit.value" :value="unit.value">
-              {{ unit.label }}
-            </option>
-          </select>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="unit">計價單位</label>
+            <select id="unit" class="form-select" v-model="formData.unit" required>
+              <option v-for="unit in unitTypes" :key="unit.value" :value="unit.value">
+                {{ unit.label }}
+              </option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="capacity">容納人數</label>
-          <input type="number" id="capacity" class="form-input" v-model="formData.capacity" required>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="capacity">容納人數</label>
+            <input type="number" id="capacity" class="form-input" v-model="formData.capacity" required>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label" for="availableTime">營業時間</label>
-          <input type="text" id="availableTime" class="form-input" v-model="formData.availableTime" required>
-        </div>
+          <div class="form-group">
+            <label class="form-label" for="availableTime">營業時間</label>
+            <input type="text" id="availableTime" class="form-input" v-model="formData.availableTime" required>
+          </div>
 
-         <!-- 時段選擇部分
+          <!-- 時段選擇部分
         <div class="form-group full-width">
           <label class="form-label">可預約時段</label>
           <div class="time-slots-grid">
@@ -89,64 +90,65 @@
           </div>
         </div>  -->
 
-        <div class="form-group">
-          <label class="form-label" for="phoneNumber">電話號碼</label>
-          <input type="tel" id="phoneNumber" class="form-input" v-model="formData.phoneNumber" required>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="imageName">圖片上傳</label>
-          <input type="file" id="imageName" class="form-input" @change="handleImageUpload" accept="image/*">
-          <!-- 預覽圖片 -->
-          <div v-if="imagePreview" class="image-preview">
-            <img :src="imagePreview" alt="預覽" class="preview-img">
+          <div class="form-group">
+            <label class="form-label" for="phoneNumber">電話號碼</label>
+            <input type="tel" id="phoneNumber" class="form-input" v-model="formData.phoneNumber" required>
           </div>
-        </div>
 
-        <!-- 設備清單 -->
-        <div class="form-group full-width">
-          <label class="form-label">設備</label>
-          <div class="equipment-grid">
-            <label v-for="item in equipmentOptions" :key="item" class="equipment-item">
-              <input type="checkbox" :value="item" v-model="formData.equipment">
-              <span>{{ item }}</span>
-            </label>
+          <div class="form-group">
+            <label class="form-label" for="imageName">圖片上傳</label>
+            <input type="file" id="imageName" class="form-input" @change="handleImageUpload" accept="image/*">
+            <!-- 預覽圖片 -->
+            <div v-if="imagePreview" class="image-preview">
+              <img :src="imagePreview" alt="預覽" class="preview-img">
+            </div>
           </div>
-        </div>
 
-        <!-- 關閉日期 -->
-        <div class="form-group full-width">
-          <label class="form-label">休館日期</label>
-          <input type="date" v-model="newCloseDate" class="form-input mb-2">
-          <button type="button" @click="addCloseDate" class="btn btn-outline mb-2">
-            新增日期
-          </button>
-          <div class="close-dates-list">
-            <div v-for="(date, index) in formData.closeDates" :key="index" class="close-date-item">
-              {{ date }}
-              <button type="button" @click="removeCloseDate(index)" class="btn-remove">
-                ×
-              </button>
+          <!-- 設備清單 -->
+          <div class="form-group full-width">
+            <label class="form-label">設備</label>
+            <div class="equipment-grid">
+              <label v-for="item in equipmentOptions" :key="item" class="equipment-item">
+                <input type="checkbox" :value="item" v-model="formData.equipment">
+                <span>{{ item }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 關閉日期 -->
+          <div class="form-group full-width">
+            <label class="form-label">休館日期</label>
+            <input type="date" v-model="newCloseDate" class="form-input mb-2">
+            <button type="button" @click="addCloseDate" class="btn btn-outline mb-2">
+              新增日期
+            </button>
+            <div class="close-dates-list">
+              <div v-for="(date, index) in formData.closeDates" :key="index" class="close-date-item">
+                {{ date }}
+                <button type="button" @click="removeCloseDate(index)" class="btn-remove">
+                  ×
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-group full-width">
-        <label class="form-label" for="remark">備註</label>
-        <textarea id="remark" class="form-textarea" v-model="formData.remark"></textarea>
-      </div>
+        <div class="form-group full-width">
+          <label class="form-label" for="remark">備註</label>
+          <textarea id="remark" class="form-textarea" v-model="formData.remark"></textarea>
+        </div>
 
-      <div class="button-group">
-        <router-link to="/venues" class="btn btn-outline">
-          返回
-        </router-link>
-        <button type="submit" class="btn btn-primary">
-          {{ isEdit ? '更新' : '新增' }}
-        </button>
-      </div>
+        <div class="button-group">
+          <router-link to="/venues" class="btn btn-outline">
+            返回
+          </router-link>
+          <button type="submit" class="btn btn-primary">
+            {{ isEdit ? '更新' : '新增' }}
+          </button>
+        </div>
 
-    </form>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -341,7 +343,7 @@ const fetchVenueData = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/venues/${id}`)
       const venueData = response.data
-      
+
       // 更新表單數據，包括 id
       formData.id = venueData.id
       formData.placeName = venueData.placeName
@@ -426,6 +428,21 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
+.form-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.form-wrapper {
+  width: 900px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
 .card {
   background: white;
   border-radius: 8px;
@@ -482,8 +499,8 @@ onMounted(() => {
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  border-color: #c0783e;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
 }
 
 .form-textarea {
@@ -509,22 +526,23 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background-color: #4a90e2;
+  background-color: #c0783e;
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #357abd;
+  background-color: #3F3F3F;
 }
 
 .btn-outline {
   background-color: white;
-  color: #4a90e2;
-  border: 1px solid #4a90e2;
+  color: #c0783e;
+  border: 1px solid #c0783e;
 }
 
 .btn-outline:hover {
-  background-color: #f8f9fa;
+  background-color: #262626;
+  color: white;
 }
 
 @media (max-width: 768px) {
@@ -570,7 +588,7 @@ onMounted(() => {
 
 /* 當選中時的樣式 */
 .time-slot-checkbox:checked+.time-slot-text {
-  color: #4a90e2;
+  color: #3F3F3F;
   font-weight: 500;
 }
 
@@ -627,5 +645,12 @@ onMounted(() => {
   width: 100%;
   height: auto;
   border-radius: 4px;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+  justify-content: center;
 }
 </style>

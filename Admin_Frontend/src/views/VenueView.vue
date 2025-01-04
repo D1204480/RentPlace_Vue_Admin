@@ -1,7 +1,7 @@
 // VenueList.vue
 <template>
   <div class="d-flex flex-column min-vh-100">
-    <div class="container-fluid mt-4 mb-3">
+    <div class="container-fluid mt-4 mb-3 text-end">
       <router-link to="/venues/create" class="btn btn-primary">
         新增場地
       </router-link>
@@ -116,11 +116,13 @@ onMounted(() => {
 
 <style scoped>
 /* 搜尋框 */
+.btn-outline-primary,
 .btn-outline-success {
   color: #3F3F3F;
   border-color: #3F3F3F;
 }
 
+.btn-outline-primary,
 .btn-outline-success:hover {
   color: #fff;
   background-color: #3F3F3F;
@@ -290,7 +292,16 @@ th {
 /* END */
 
 /* 修改 btn-danger, btn-warning 背景色 */
-.btn-danger,
+.btn-primary {
+  background-color:#c0783e;
+  border-color: #c0783e;
+}
+
+.btn-primary:hover {
+  background-color:#d2852e;
+  border-color: #d2852e;
+}
+
 .btn-danger:hover {
   color: #fff;
   background-color: rgb(255, 255, 255);
@@ -303,12 +314,12 @@ th {
 }
 
 .btn-danger {
-  background-color: #dc3545;
+  background-color: #c0783e;
   color: white;
 }
 
 .btn-danger:hover {
-  background-color: #c82333;
+  background-color: #d2852e;
 }
 
 .modal {
