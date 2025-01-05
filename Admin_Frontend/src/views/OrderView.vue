@@ -158,26 +158,38 @@
       </div>
     </div>
   </div>
+
+  <!-- 分頁 -->
+  <div class="d-flex justify-content-center mt-3 mb-4" v-if="totalPages > 1">
+    <Pagination :total-pages="totalPages" :current-page="currentPage" @update:page="handlePageChange" />
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Pagination from '../components/Pagination.vue';
 
 export default {
+  components: {
+    Pagination
+  },
+
   data() {
     return {
       orders: [],
       orderDetails: {},
       filterDate: 'none',
       searchQuery: '',
-      selectedOrder: null
+      selectedOrder: null,
+      currentPage: 1,
+      itemsPerPage: 15 // 每頁顯示的訂單數量
     };
   },
 
   computed: {
     filteredOrders() {
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // 設置時間為當天開始
+      today.setHours(0, 0, 0, 0);
 
       const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
@@ -185,35 +197,54 @@ export default {
       const oneWeekLater = new Date(today);
       oneWeekLater.setDate(today.getDate() + 7);
 
-      if (this.filterDate === 'none') {
-        return this.orders.filter(order => {
-          return order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
+      // 先過濾訂單
+      let filtered = this.orders;
+
+      if (this.filterDate !== 'none') {
+        filtered = filtered.filter(order => {
+          const orderDate = new Date(order.orderDate);
+          orderDate.setHours(0, 0, 0, 0);
+
+          const reservationDate = new Date(order.reservation?.reservationDate);
+          reservationDate.setHours(0, 0, 0, 0);
+
+          if (this.filterDate === 'today') {
+            return orderDate.getTime() === today.getTime() ||
+              reservationDate.getTime() === today.getTime();
+          } else if (this.filterDate === 'tomorrow') {
+            return orderDate.getTime() === tomorrow.getTime() ||
+              reservationDate.getTime() === tomorrow.getTime();
+          } else if (this.filterDate === 'week') {
+            return (orderDate >= today && orderDate <= oneWeekLater) ||
+              (reservationDate >= today && reservationDate <= oneWeekLater);
+          }
+          return true;
         });
       }
 
-      return this.orders.filter(order => {
-        const orderDate = new Date(order.orderDate);
-        orderDate.setHours(0, 0, 0, 0);
+      // 搜尋過濾
+      if (this.searchQuery) {
+        filtered = filtered.filter(order =>
+          order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      }
 
-        const reservationDate = new Date(order.reservation?.reservationDate);
-        reservationDate.setHours(0, 0, 0, 0);
+      // 分頁
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return filtered.slice(start, end);
+    },
 
-        let dateMatch = false;
-
-        if (this.filterDate === 'today') {
-          dateMatch = orderDate.getTime() === today.getTime() ||
-            reservationDate.getTime() === today.getTime();
-        } else if (this.filterDate === 'tomorrow') {
-          dateMatch = orderDate.getTime() === tomorrow.getTime() ||
-            reservationDate.getTime() === tomorrow.getTime();
-        } else if (this.filterDate === 'week') {
-          dateMatch = (orderDate >= today && orderDate <= oneWeekLater) ||
-            (reservationDate >= today && reservationDate <= oneWeekLater);
+    totalPages() {
+      // 計算總頁數
+      const filteredTotal = this.orders.filter(order => {
+        if (this.searchQuery) {
+          return order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
         }
+        return true;
+      }).length;
 
-        const searchMatch = order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
-        return dateMatch && searchMatch;
-      });
+      return Math.ceil(filteredTotal / this.itemsPerPage);
     }
   },
 
@@ -259,11 +290,27 @@ export default {
       } catch (error) {
         console.error("Error canceling order:", error);
       }
+    },
+
+    handlePageChange(page) {
+      this.currentPage = page;
+      // 當頁碼改變時，重置到頁面頂部
+      window.scrollTo(0, 0);
+    },
+
+    handleSearch() {
+      this.currentPage = 1; // 搜尋時重置到第一頁
     }
   },
 
   created() {
     this.getData();
+  },
+
+  watch: {
+    filterDate() {
+      this.currentPage = 1; // 當過濾條件改變時，重置到第一頁
+    }
   }
 };
 </script>

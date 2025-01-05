@@ -46,12 +46,18 @@
       </div>
     </div>
   </div>
+
+  <!-- 分頁 -->
+  <div class="d-flex justify-content-center mt-3 mb-4" v-if="totalPages > 1">
+    <Pagination :total-pages="totalPages" :current-page="currentPage" @update:page="handlePageChange" />
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import Pagination from '../components/Pagination.vue';
 
 const router = useRouter()
 const venues = ref([])
