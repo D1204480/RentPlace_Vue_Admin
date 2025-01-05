@@ -74,7 +74,7 @@
               <template v-for="(order, index) in filteredOrders" :key="order.orderId">
                 <!-- 訂單資料行 -->
                 <tr>
-                  <th scope="row">{{ index + 1 }}</th>
+                  <th scope="row">{{ calculateIndex(index) }}</th>
                   <td>{{ formatDate(order.orderDate) }}</td>
                   <td>{{ order.orderId }}</td>
                   <td>{{ order.reservation.venue.venueName }}</td>
@@ -249,6 +249,11 @@ export default {
   },
 
   methods: {
+    // 添加計算序號的方法
+    calculateIndex(index) {
+      return (this.currentPage - 1) * this.itemsPerPage + index + 1;
+    },
+    
     formatDate(dateString) {
       if (!dateString) return '-';
       const date = new Date(dateString);
