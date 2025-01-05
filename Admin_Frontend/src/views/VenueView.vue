@@ -315,6 +315,7 @@ th {
 
 .btn-danger {
   background-color: #c0783e;
+  border-color: #c0783e;
   color: white;
 }
 
