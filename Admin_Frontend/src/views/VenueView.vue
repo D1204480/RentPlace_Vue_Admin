@@ -24,8 +24,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(venue, index) in venues" :key="venue.id">
-                <td>{{ index + 1 }}</td>
+              <tr v-for="(venue, index) in paginatedVenues" :key="venue.id">
+                <td>{{ calculateIndex(index) }}</td>
                 <td>{{ venue.placeName }}</td>
                 <td>{{ getVenueTypeName(venue.venueType) }}</td>
                 <td>{{ venue.regionName }}</td>
@@ -45,22 +45,28 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 分頁 -->
-  <div class="d-flex justify-content-center mt-3 mb-4" v-if="totalPages > 1">
-    <Pagination :total-pages="totalPages" :current-page="currentPage" @update:page="handlePageChange" />
+    <!-- 分頁 -->
+    <div class="d-flex justify-content-center mt-3 mb-4" v-if="totalPages > 1">
+      <Pagination 
+        :total-pages="totalPages" 
+        :current-page="currentPage" 
+        @update:page="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import Pagination from '../components/Pagination.vue';
 
 const router = useRouter()
 const venues = ref([])
+const currentPage = ref(1)
+const itemsPerPage = 15  // 每頁顯示的數量
 
 // 直接在組件中定義 API 函數
 const api = axios.create({
@@ -70,6 +76,29 @@ const api = axios.create({
     'Content-Type': 'application/json'
   }
 })
+
+// 計算總頁數
+const totalPages = computed(() => {
+  return Math.ceil(venues.value.length / itemsPerPage)
+})
+
+// 計算當前頁面要顯示的場地
+const paginatedVenues = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return venues.value.slice(start, end)
+})
+
+// 計算序號
+const calculateIndex = (index) => {
+  return (currentPage.value - 1) * itemsPerPage + index + 1
+}
+
+// 處理頁碼變更
+const handlePageChange = (page) => {
+  currentPage.value = page
+  window.scrollTo(0, 0)
+}
 
 // 獲取場地列表
 const fetchVenues = async () => {
@@ -98,6 +127,12 @@ const confirmDelete = async (venue) => {
     try {
       await api.delete(`/venues/${venue.id}`)
       await fetchVenues() // 重新加載列表
+      
+      // 檢查刪除後是否需要調整當前頁碼
+      const maxPage = Math.ceil((venues.value.length) / itemsPerPage)
+      if (currentPage.value > maxPage) {
+        currentPage.value = maxPage || 1
+      }
     } catch (error) {
       console.error('刪除失敗:', error)
     }
@@ -299,12 +334,12 @@ th {
 
 /* 修改 btn-danger, btn-warning 背景色 */
 .btn-primary {
-  background-color:#c0783e;
+  background-color: #c0783e;
   border-color: #c0783e;
 }
 
 .btn-primary:hover {
-  background-color:#d2852e;
+  background-color: #d2852e;
   border-color: #d2852e;
 }
 
