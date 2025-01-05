@@ -76,7 +76,7 @@
                 <tr>
                   <th scope="row">{{ index + 1 }}</th>
                   <td>{{ formatDate(order.orderDate) }}</td>
-                  <td>{{ order.orderId}}</td>
+                  <td>{{ order.orderId }}</td>
                   <td>{{ order.reservation.venue.venueName }}</td>
                   <td>{{ order.status?.status || '-' }}</td>
                   <td style="white-space: nowrap;">
@@ -177,9 +177,12 @@ export default {
   computed: {
     filteredOrders() {
       const today = new Date();
-      const tomorrow = new Date();
+      today.setHours(0, 0, 0, 0); // 設置時間為當天開始
+
+      const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
-      const oneWeekLater = new Date();
+
+      const oneWeekLater = new Date(today);
       oneWeekLater.setDate(today.getDate() + 7);
 
       if (this.filterDate === 'none') {
@@ -190,14 +193,22 @@ export default {
 
       return this.orders.filter(order => {
         const orderDate = new Date(order.orderDate);
+        orderDate.setHours(0, 0, 0, 0);
+
+        const reservationDate = new Date(order.reservation?.reservationDate);
+        reservationDate.setHours(0, 0, 0, 0);
 
         let dateMatch = false;
+
         if (this.filterDate === 'today') {
-          dateMatch = orderDate.toDateString() === today.toDateString();
+          dateMatch = orderDate.getTime() === today.getTime() ||
+            reservationDate.getTime() === today.getTime();
         } else if (this.filterDate === 'tomorrow') {
-          dateMatch = orderDate.toDateString() === tomorrow.toDateString();
+          dateMatch = orderDate.getTime() === tomorrow.getTime() ||
+            reservationDate.getTime() === tomorrow.getTime();
         } else if (this.filterDate === 'week') {
-          dateMatch = orderDate >= today && orderDate <= oneWeekLater;
+          dateMatch = (orderDate >= today && orderDate <= oneWeekLater) ||
+            (reservationDate >= today && reservationDate <= oneWeekLater);
         }
 
         const searchMatch = order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
@@ -260,26 +271,26 @@ export default {
 <style scoped>
 /* 搜尋框 */
 .btn-outline-success {
-    color: #3F3F3F;
-    border-color: #3F3F3F;
+  color: #3F3F3F;
+  border-color: #3F3F3F;
 }
 
 .btn-outline-success:hover {
-    color: #fff;
-    background-color: #3F3F3F;
-    border-color: #3F3F3F;
+  color: #fff;
+  background-color: #3F3F3F;
+  border-color: #3F3F3F;
 }
 
 .btn-outline-success:active,
 .btn-outline-success.active,
-.btn-check:checked + .btn-outline-success {
-    color: #fff;
-    background-color: #3F3F3F;
-    border-color: #3F3F3F;
+.btn-check:checked+.btn-outline-success {
+  color: #fff;
+  background-color: #3F3F3F;
+  border-color: #3F3F3F;
 }
 
 .btn-outline-success:focus {
-    box-shadow: 0 0 0 0.25rem rgba(63, 63, 63, 0.5);
+  box-shadow: 0 0 0 0.25rem rgba(63, 63, 63, 0.5);
 }
 
 .btn-warning {
@@ -289,9 +300,9 @@ export default {
 }
 
 .btn-warning:hover {
-    color: #fff;
-    background-color: #262626;
-    border-color: #262626;
+  color: #fff;
+  background-color: #262626;
+  border-color: #262626;
 }
 
 /* Store navBar */
