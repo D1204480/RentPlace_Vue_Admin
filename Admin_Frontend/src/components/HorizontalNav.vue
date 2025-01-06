@@ -10,7 +10,7 @@
           </li>
           <li class="nav-item">
             <RouterLink to="/order" class="nav-link" active-class="active">
-              <span class="nav-text">訂單預約管理</span>
+              <span class="nav-text">訂單管理</span>
             </RouterLink>
           </li>
           <li class="nav-item">
