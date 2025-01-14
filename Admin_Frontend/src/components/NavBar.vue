@@ -4,12 +4,12 @@
       <div class="brand-title">場館預約</div>
       <div class="brand-subtitle">Venue Reservation</div>
     </a>
-    <div class="auth-buttons">
-      <RouterLink to="/register" href="#" class="register-btn">註冊</RouterLink>
-      <!-- <a href="#" class="">登入</a> -->
-      <button type="button" class="btn login-btn me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
-        登入
-      </button>
+    <div class="user-profile">
+      <div class="avatar">
+        <img src="@/assets/avatar.png" alt="User avatar" />
+      </div>
+      <span class="username">皮卡chu</span>
+      <!-- <button class="logout-btn">登出</button> -->
     </div>
     <button class="hamburger" :class="{ active: isMenuOpen }" @click="toggleMenu">
       <span></span>
@@ -17,8 +17,13 @@
       <span></span>
     </button>
     <div class="mobile-menu" :class="{ active: isMenuOpen }">
-      <RouterLink to="/register" class="register-btn">註冊</RouterLink>
-      <a href="#" class="login-btn">登入</a>
+      <div class="mobile-user-profile">
+        <div class="avatar">
+          <img src="@/assets/avatar.png" alt="User avatar" />
+        </div>
+        <span class="username">皮卡丘</span>
+      </div>
+      <!-- <button class="logout-btn">登出</button> -->
     </div>
   </nav>
 </template>
@@ -66,29 +71,41 @@ const toggleMenu = () => {
   color: #666;
 }
 
-.auth-buttons {
+.user-profile {
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 1rem;
 }
 
-.register-btn {
-  text-decoration: none;
-  color: #333;
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.username {
   font-size: 1rem;
+  color: #333;
 }
 
-
-.login-btn {
+.logout-btn {
   background-color: #3F3F3F;
   color: white;
   padding: 0.5rem 1.5rem;
   border-radius: 4px;
-  text-decoration: none;
+  border: none;
   font-size: 1rem;
+  cursor: pointer;
 }
 
-.login-btn:hover {
+.logout-btn:hover {
   background-color: #262626;
 }
 
@@ -126,6 +143,13 @@ const toggleMenu = () => {
   gap: 1rem;
 }
 
+.mobile-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
 .hamburger.active span:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);
 }
@@ -139,22 +163,18 @@ const toggleMenu = () => {
 }
 
 @media (max-width: 425px) {
-  .auth-buttons {
+  .user-profile {
     display: none;
   }
-
+  
   .hamburger {
     display: flex;
   }
-
-  .mobile-menu .register-btn,
-  .mobile-menu .login-btn {
+  
+  .mobile-menu .logout-btn {
     display: block;
+    width: 100%;
     text-align: center;
-  }
-
-  .mobile-menu .login-btn {
-    margin-top: 0.5rem;
   }
 }
 </style>

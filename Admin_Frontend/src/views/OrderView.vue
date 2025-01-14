@@ -74,9 +74,9 @@
               <template v-for="(order, index) in filteredOrders" :key="order.orderId">
                 <!-- 訂單資料行 -->
                 <tr>
-                  <th scope="row">{{ index + 1 }}</th>
+                  <th scope="row">{{ calculateIndex(index) }}</th>
                   <td>{{ formatDate(order.orderDate) }}</td>
-                  <td>{{ order.orderId}}</td>
+                  <td>{{ order.orderId }}</td>
                   <td>{{ order.reservation.venue.venueName }}</td>
                   <td>{{ order.status?.status || '-' }}</td>
                   <td style="white-space: nowrap;">
@@ -149,64 +149,111 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          您確定要刪除訂單嗎?
+          確定要刪除訂單?
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="deleteOrder">刪除</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="deleteOrder">確定刪除</button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- 分頁 -->
+  <div class="d-flex justify-content-center mt-3 mb-4" v-if="totalPages > 1">
+    <Pagination :total-pages="totalPages" :current-page="currentPage" @update:page="handlePageChange" />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Pagination from '../components/Pagination.vue';
 
 export default {
+  components: {
+    Pagination
+  },
+
   data() {
     return {
       orders: [],
       orderDetails: {},
       filterDate: 'none',
       searchQuery: '',
-      selectedOrder: null
+      selectedOrder: null,
+      currentPage: 1,
+      itemsPerPage: 15 // 每頁顯示的訂單數量
     };
   },
 
   computed: {
     filteredOrders() {
       const today = new Date();
-      const tomorrow = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
-      const oneWeekLater = new Date();
+
+      const oneWeekLater = new Date(today);
       oneWeekLater.setDate(today.getDate() + 7);
 
-      if (this.filterDate === 'none') {
-        return this.orders.filter(order => {
-          return order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
+      // 先過濾訂單
+      let filtered = this.orders;
+
+      if (this.filterDate !== 'none') {
+        filtered = filtered.filter(order => {
+          const orderDate = new Date(order.orderDate);
+          orderDate.setHours(0, 0, 0, 0);
+
+          const reservationDate = new Date(order.reservation?.reservationDate);
+          reservationDate.setHours(0, 0, 0, 0);
+
+          if (this.filterDate === 'today') {
+            return orderDate.getTime() === today.getTime() ||
+              reservationDate.getTime() === today.getTime();
+          } else if (this.filterDate === 'tomorrow') {
+            return orderDate.getTime() === tomorrow.getTime() ||
+              reservationDate.getTime() === tomorrow.getTime();
+          } else if (this.filterDate === 'week') {
+            return (orderDate >= today && orderDate <= oneWeekLater) ||
+              (reservationDate >= today && reservationDate <= oneWeekLater);
+          }
+          return true;
         });
       }
 
-      return this.orders.filter(order => {
-        const orderDate = new Date(order.orderDate);
+      // 搜尋過濾
+      if (this.searchQuery) {
+        filtered = filtered.filter(order =>
+          order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      }
 
-        let dateMatch = false;
-        if (this.filterDate === 'today') {
-          dateMatch = orderDate.toDateString() === today.toDateString();
-        } else if (this.filterDate === 'tomorrow') {
-          dateMatch = orderDate.toDateString() === tomorrow.toDateString();
-        } else if (this.filterDate === 'week') {
-          dateMatch = orderDate >= today && orderDate <= oneWeekLater;
+      // 分頁
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return filtered.slice(start, end);
+    },
+
+    totalPages() {
+      // 計算總頁數
+      const filteredTotal = this.orders.filter(order => {
+        if (this.searchQuery) {
+          return order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
         }
+        return true;
+      }).length;
 
-        const searchMatch = order.userId?.toLowerCase().includes(this.searchQuery.toLowerCase());
-        return dateMatch && searchMatch;
-      });
+      return Math.ceil(filteredTotal / this.itemsPerPage);
     }
   },
 
   methods: {
+    // 添加計算序號的方法
+    calculateIndex(index) {
+      return (this.currentPage - 1) * this.itemsPerPage + index + 1;
+    },
+    
     formatDate(dateString) {
       if (!dateString) return '-';
       const date = new Date(dateString);
@@ -248,11 +295,27 @@ export default {
       } catch (error) {
         console.error("Error canceling order:", error);
       }
+    },
+
+    handlePageChange(page) {
+      this.currentPage = page;
+      // 當頁碼改變時，重置到頁面頂部
+      window.scrollTo(0, 0);
+    },
+
+    handleSearch() {
+      this.currentPage = 1; // 搜尋時重置到第一頁
     }
   },
 
   created() {
     this.getData();
+  },
+
+  watch: {
+    filterDate() {
+      this.currentPage = 1; // 當過濾條件改變時，重置到第一頁
+    }
   }
 };
 </script>
@@ -260,26 +323,26 @@ export default {
 <style scoped>
 /* 搜尋框 */
 .btn-outline-success {
-    color: #3F3F3F;
-    border-color: #3F3F3F;
+  color: #3F3F3F;
+  border-color: #3F3F3F;
 }
 
 .btn-outline-success:hover {
-    color: #fff;
-    background-color: #3F3F3F;
-    border-color: #3F3F3F;
+  color: #fff;
+  background-color: #3F3F3F;
+  border-color: #3F3F3F;
 }
 
 .btn-outline-success:active,
 .btn-outline-success.active,
-.btn-check:checked + .btn-outline-success {
-    color: #fff;
-    background-color: #3F3F3F;
-    border-color: #3F3F3F;
+.btn-check:checked+.btn-outline-success {
+  color: #fff;
+  background-color: #3F3F3F;
+  border-color: #3F3F3F;
 }
 
 .btn-outline-success:focus {
-    box-shadow: 0 0 0 0.25rem rgba(63, 63, 63, 0.5);
+  box-shadow: 0 0 0 0.25rem rgba(63, 63, 63, 0.5);
 }
 
 .btn-warning {
@@ -289,9 +352,9 @@ export default {
 }
 
 .btn-warning:hover {
-    color: #fff;
-    background-color: #262626;
-    border-color: #262626;
+  color: #fff;
+  background-color: #262626;
+  border-color: #262626;
 }
 
 /* Store navBar */
