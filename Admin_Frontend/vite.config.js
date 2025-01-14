@@ -14,5 +14,6 @@ export default defineConfig({
     }
   },
 
-  publicPath: '/RentPlace_Vue_Admin/'
+  base: '/RentPlace_Vue_Admin/',  // GitHub repository 名稱
+   
 })
